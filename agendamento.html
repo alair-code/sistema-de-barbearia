@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agendamento online da barbearia.">
+  <title>Barbearia — Agendamento</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/agendamento.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✂</span><div><strong>Barbearia</strong><small>Gestão</small></div></div>
+      <nav>
+        <a class="nav-link" href="index.html">📊 Dashboard</a>
+        <a class="nav-link" href="agenda.html">📅 Agenda</a>
+        <a class="nav-link active" href="agendamento.html" aria-current="page">📲 Agendamento</a>
+        <a class="nav-link" href="#" aria-disabled="true">👤 Clientes</a>
+        <a class="nav-link" href="#" aria-disabled="true">✂️ Serviços</a>
+        <a class="nav-link" href="#" aria-disabled="true">💰 Financeiro</a>
+        <a class="nav-link" href="#" aria-disabled="true">⚙️ Configurações</a>
+      </nav>
+      <p class="sidebar-note">Os módulos serão liberados conforme o desenvolvimento.</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Atendimento online</p>
+          <h1>Novo agendamento</h1>
+          <p class="muted">Escolha o serviço, o barbeiro, a data e um horário disponível.</p>
+        </div>
+      </header>
+
+      <section class="booking-layout">
+        <form id="booking-form" class="panel booking-card" novalidate>
+          <div class="booking-section">
+            <div class="section-heading"><span class="step">1</span><div><h2>Serviço</h2><p>Selecione o que será realizado.</p></div></div>
+            <div id="service-options" class="choice-grid" role="radiogroup" aria-label="Serviços"></div>
+          </div>
+
+          <div class="booking-section">
+            <div class="section-heading"><span class="step">2</span><div><h2>Barbeiro</h2><p>Escolha o profissional.</p></div></div>
+            <div id="barber-options" class="choice-grid" role="radiogroup" aria-label="Barbeiros"></div>
+          </div>
+
+          <div class="booking-section">
+            <div class="section-heading"><span class="step">3</span><div><h2>Data e horário</h2><p>Mostramos somente horários disponíveis.</p></div></div>
+            <div class="date-row">
+              <button id="previous-date" class="button button-secondary" type="button" aria-label="Data anterior">←</button>
+              <label class="date-field">Data<input id="booking-date" type="date" required></label>
+              <button id="next-date" class="button button-secondary" type="button" aria-label="Próxima data">→</button>
+            </div>
+            <div id="date-hint" class="date-hint" aria-live="polite"></div>
+            <div id="slot-options" class="slot-grid" role="radiogroup" aria-label="Horários disponíveis"></div>
+          </div>
+
+          <div class="booking-section">
+            <div class="section-heading"><span class="step">4</span><div><h2>Seus dados</h2><p>Precisamos dessas informações para confirmar o atendimento.</p></div></div>
+            <div class="form-grid">
+              <label>Nome<input id="client-name" type="text" maxlength="100" autocomplete="name" required placeholder="Seu nome"></label>
+              <label>WhatsApp<input id="client-phone" type="tel" maxlength="20" autocomplete="tel" required placeholder="(00) 00000-0000"></label>
+              <label class="full">Observação<input id="client-notes" type="text" maxlength="200" placeholder="Opcional"></label>
+            </div>
+          </div>
+
+          <p id="booking-error" class="form-error" role="alert" aria-live="assertive"></p>
+          <div class="booking-actions"><button class="button button-primary" type="submit">Confirmar agendamento</button></div>
+        </form>
+
+        <aside class="panel booking-summary" aria-label="Resumo do agendamento">
+          <p class="eyebrow">Resumo</p>
+          <h2>Seu atendimento</h2>
+          <dl>
+            <div><dt>Serviço</dt><dd id="summary-service">Selecione um serviço</dd></div>
+            <div><dt>Barbeiro</dt><dd id="summary-barber">Selecione um barbeiro</dd></div>
+            <div><dt>Data</dt><dd id="summary-date">Selecione uma data</dd></div>
+            <div><dt>Horário</dt><dd id="summary-time">Selecione um horário</dd></div>
+            <div><dt>Duração</dt><dd id="summary-duration">—</dd></div>
+            <div><dt>Valor</dt><dd id="summary-price">—</dd></div>
+          </dl>
+          <div class="summary-note">Após salvar, você poderá enviar a confirmação pelo WhatsApp.</div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="success-dialog" class="modal">
+    <div class="success-content">
+      <span class="success-icon" aria-hidden="true">✓</span>
+      <p class="eyebrow">Agendamento realizado</p>
+      <h2>Horário reservado</h2>
+      <p id="success-message"></p>
+      <div class="modal-actions">
+        <button id="whatsapp-button" class="button button-primary" type="button">Confirmar pelo WhatsApp</button>
+        <button id="close-success" class="button button-secondary" type="button">Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="js/agendamento.js"></script>
+</body>
+</html>

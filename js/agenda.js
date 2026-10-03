@@ -94,7 +94,7 @@
   function renderWeek(date) {
     const start = getWeekStart(date), days = Array.from({length:7},(_,index)=>addDays(start,index));
     return '<div class="week-scroll"><div class="week-grid">'+days.map(day => {
-      const appointments = getDayAppointments(day), blocks = getDayBlocks(day), slots = buildSlots(day).slice(0,8), rendered = new Set();
+      const appointments = getDayAppointments(day), blocks = getDayBlocks(day), slots = buildSlots(day), rendered = new Set();
       const content = slots.length ? slots.map(time => {
         const appointment = findAppointmentAt(day,time), block = findBlockAt(day,time);
         if (appointment) { if (rendered.has(appointment.id)||getTime(appointment)!==time) return ""; rendered.add(appointment.id); return appointmentMarkup(appointment,time); }
@@ -158,7 +158,7 @@
     const form=event.currentTarget, data=Object.fromEntries(new FormData(form).entries()), error=document.querySelector("#form-error");
     const appointments=readList(STORAGE_KEYS.appointments), editingId=data.id, activeAppointments=appointments.filter(item=>!isCanceled(item)&&item.id!==editingId);
     const start=timeToMinutes(data.time), duration=Number(data.duration)||45, end=start+duration;
-    if (!data.date||!Number.isFinite(start)||start<0||start>=1440||end>1440) { error.textContent="Informe uma data, horário e duração válidos."; return; }
+    if (!data.date||!Number.isFinite(start)||start<0||start>=1440||end>1440||start%30!==0) { error.textContent="Informe uma data, horário e duração válidos."; return; }\n    const settings=getSettings(), operatingDays=getOperatingDays(settings), {open,close}=getHours(settings), openMinute=timeToMinutes(open), closeMinute=timeToMinutes(close);\n    const appointmentDate=parseDate(data.date);\n    if (!appointmentDate || (operatingDays && !operatingDays.map(Number).includes(appointmentDate.getDay())) || !Number.isFinite(openMinute) || !Number.isFinite(closeMinute) || start<openMinute || end>closeMinute) { error.textContent="O agendamento está fora do funcionamento configurado."; return; }
     const conflict=activeAppointments.some(item=>{if(dateKey(item.date||item.start)!==data.date)return false;const otherStart=timeToMinutes(getTime(item)),otherEnd=otherStart+getDuration(item);return start<otherEnd&&end>otherStart;});
     const blockConflict=getBlocks().some(item=>{if(dateKey(item.date)!==data.date)return false;const blockStart=timeToMinutes(item.time),blockEnd=blockStart+(Number(item.duration)>0?Number(item.duration):30);return start<blockEnd&&end>blockStart;});
     if(conflict||blockConflict){error.textContent="Esse período já possui um atendimento ou bloqueio.";return;}
@@ -170,7 +170,7 @@
 
   function saveBlock(event) {
     event.preventDefault(); const form=event.currentTarget,data=Object.fromEntries(new FormData(form).entries()),error=document.querySelector("#block-error"),date=parseDate(data.date),time=timeToMinutes(data.time);
-    if(!date||!Number.isFinite(time)||time<0||time>=1440){error.textContent="Informe uma data e horário válidos.";return;}
+    if(!date||!Number.isFinite(time)||time<0||time>=1440||time%30!==0){error.textContent="Informe uma data e horário válidos.";return;}\n    const settings=getSettings(), operatingDays=getOperatingDays(settings), {open,close}=getHours(settings), openMinute=timeToMinutes(open), closeMinute=timeToMinutes(close);\n    if((operatingDays && !operatingDays.map(Number).includes(date.getDay())) || !Number.isFinite(openMinute) || !Number.isFinite(closeMinute) || time<openMinute || time>=closeMinute){error.textContent="O bloqueio está fora do funcionamento configurado.";return;}
     if(getDayAppointments(date).some(item=>getTime(item)===data.time)){error.textContent="Já existe um atendimento nesse horário.";return;}
     const blocks=readList(STORAGE_KEYS.blocks); if(blocks.some(item=>dateKey(item.date)===data.date&&String(item.time).slice(0,5)===data.time)){error.textContent="Esse horário já está bloqueado.";return;}
     blocks.push({id:"bloq-"+Date.now(),date:data.date,time:data.time,duration:30,reason:data.reason.trim()||"Horário bloqueado",createdAt:new Date().toISOString()});

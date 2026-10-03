@@ -57,13 +57,13 @@
 
   function renderServices(){
     const container=document.querySelector("#service-options");
-    container.innerHTML=getServices().map((service,i)=>'<div class="choice"><input id="service-'+service.id+'" type="radio" name="service" value="'+service.id+'" '+(i===0?'checked':'')+'><label for="service-'+service.id+'"><span class="choice-title">'+escapeHtml(service.name)+'</span><span class="choice-meta">'+escapeHtml(service.description||"")+" · "+escapeHtml(money(service.price))+" · "+escapeHtml(getServiceDuration(service)+" min")+'</span></label></div>').join("");
+    container.innerHTML=getServices().map((service,i)=>'<div class="choice"><input id="service-'+escapeHtml(service.id)+'" type="radio" name="service" value="'+escapeHtml(service.id)+'" '+(i===0?'checked':'')+'><label for="service-'+escapeHtml(service.id)+'"><span class="choice-title">'+escapeHtml(service.name)+'</span><span class="choice-meta">'+escapeHtml(service.description||"")+" · "+escapeHtml(money(service.price))+" · "+escapeHtml(getServiceDuration(service)+" min")+'</span></label></div>').join("");
     const first=getServices()[0];if(first)state.service=first.id;
     container.addEventListener("change",()=>{state.service=document.querySelector('input[name="service"]:checked')?.value||null;state.time="";renderSlots();renderSummary()});
   }
   function renderBarbers(){
     const container=document.querySelector("#barber-options");
-    container.innerHTML=getBarbers().map((barber,i)=>'<div class="choice"><input id="barber-'+barber.id+'" type="radio" name="barber" value="'+barber.id+'" '+(i===0?'checked':'')+'><label for="barber-'+barber.id+'"><span class="choice-title">'+escapeHtml(barber.name)+'</span><span class="choice-meta">Disponível para atendimento</span></label></div>').join("");
+    container.innerHTML=getBarbers().map((barber,i)=>'<div class="choice"><input id="barber-'+escapeHtml(barber.id)+'" type="radio" name="barber" value="'+escapeHtml(barber.id)+'" '+(i===0?'checked':'')+'><label for="barber-'+escapeHtml(barber.id)+'"><span class="choice-title">'+escapeHtml(barber.name)+'</span><span class="choice-meta">Disponível para atendimento</span></label></div>').join("");
     const first=getBarbers()[0];if(first)state.barber=first.id;
     container.addEventListener("change",()=>{state.barber=document.querySelector('input[name="barber"]:checked')?.value||null;state.time="";renderSlots();renderSummary()});
   }
@@ -119,7 +119,7 @@
   }
 
   document.addEventListener("DOMContentLoaded",()=>{
-    const today=dateKey(new Date());document.querySelector("#booking-date").value=today;
+    const today=dateKey(new Date());const dateInput=document.querySelector("#booking-date");dateInput.min=today;dateInput.value=today;
     renderServices();renderBarbers();renderSlots();renderSummary();
     document.querySelector("#booking-date").addEventListener("change",()=>{state.time="";renderSlots();renderSummary()});
     document.querySelector("#previous-date").addEventListener("click",()=>changeDate(-1));

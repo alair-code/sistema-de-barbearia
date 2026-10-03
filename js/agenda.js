@@ -70,7 +70,7 @@
     const status = appointment.status || "Agendado";
     return '<div class="slot"><div class="slot-time">'+escapeHtml(time)+'</div><div class="slot-content"><div class="appointment"><div class="appointment-info"><strong>'+
       escapeHtml(name)+'</strong><span>'+escapeHtml(service)+(barber ? " · "+escapeHtml(barber) : "")+
-      '</span></div><div class="appointment-meta"><span class="status-badge">'+escapeHtml(status)+'</span><button class="text-button" type="button" data-action="edit-appointment" data-id="'+escapeHtml(appointment.id||"")+'">Editar</button><button class="text-button" type="button" data-action="cancel-appointment" data-id="'+escapeHtml(appointment.id||"")+'">Cancelar</button></div></div></div></div>';
+      '</span></div><div class="appointment-meta"><span class="status-badge">'+escapeHtml(status)+'</span><button class="text-button" type="button" data-action="edit-appointment" data-id="'+escapeHtml(appointment.id||"")+'">Editar</button><button class="text-button" type="button" data-action="complete-appointment" data-id="'+escapeHtml(appointment.id||"")+'">Concluir</button><button class="text-button" type="button" data-action="miss-appointment" data-id="'+escapeHtml(appointment.id||"")+'">Faltou</button><button class="text-button" type="button" data-action="cancel-appointment" data-id="'+escapeHtml(appointment.id||"")+'">Cancelar</button></div></div></div></div>';
   }
 
   function renderDay(date) {

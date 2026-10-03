@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema profissional de gestão para barbearias.">
+  <title>Barbearia — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✂</span>
+        <div><strong>Barbearia</strong><small>Gestão</small></div>
+      </div>
+      <nav>
+        <a class="nav-link active" href="#" aria-current="page">📊 Dashboard</a>
+        <a class="nav-link" href="#" aria-disabled="true">📅 Agenda</a>
+        <a class="nav-link" href="#" aria-disabled="true">📲 Agendamento</a>
+        <a class="nav-link" href="#" aria-disabled="true">👤 Clientes</a>
+        <a class="nav-link" href="#" aria-disabled="true">✂️ Serviços</a>
+        <a class="nav-link" href="#" aria-disabled="true">💰 Financeiro</a>
+        <a class="nav-link" href="#" aria-disabled="true">⚙️ Configurações</a>
+      </nav>
+      <p class="sidebar-note">Módulos serão liberados por etapa.</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Visão geral</p>
+          <h1>Dashboard</h1>
+          <p id="today-label" class="muted"></p>
+        </div>
+      </header>
+
+      <section class="cards" aria-label="Resumo do dia">
+        <article class="card">
+          <span class="card-label">Agendamentos hoje</span>
+          <strong id="appointments-today">0</strong>
+          <span class="card-help">Nenhum agendamento registrado</span>
+        </article>
+        <article class="card">
+          <span class="card-label">Horários disponíveis</span>
+          <strong id="available-slots">0</strong>
+          <span class="card-help">Configure a agenda na próxima etapa</span>
+        </article>
+        <article class="card">
+          <span class="card-label">Clientes atendidos</span>
+          <strong id="clients-served">0</strong>
+          <span class="card-help">Atendimentos concluídos hoje</span>
+        </article>
+        <article class="card">
+          <span class="card-label">Faturamento hoje</span>
+          <strong id="revenue-today">R$ 0,00</strong>
+          <span class="card-help">Pagamentos registrados hoje</span>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Agenda</p>
+              <h2>Próximos atendimentos</h2>
+            </div>
+          </div>
+          <div id="appointments-list" class="empty-state">
+            <span class="empty-icon" aria-hidden="true">📅</span>
+            <strong>Nenhum atendimento hoje</strong>
+            <p>Os agendamentos aparecerão aqui quando forem cadastrados.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Atenção</p>
+              <h2>Alertas</h2>
+            </div>
+          </div>
+          <div id="alerts" class="alert-list">
+            <div class="alert-item">
+              <span>ℹ️</span>
+              <p>A agenda ainda não possui horários configurados.</p>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>

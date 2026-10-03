@@ -69,8 +69,9 @@ function savePayment(e){
  if(!data.date){error.textContent="Informe a data do pagamento.";return}
  if(data.date>todayKey){error.textContent="A data do pagamento não pode ser futura.";return}
  const payments=read(),now=new Date().toISOString(),id=data.id;
- const item={id:id||("pag_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)),clientName:data.clientName.trim(),clientPhone:data.clientPhone.trim(),serviceName:data.serviceName.trim(),amount:value,date:data.date,method:data.method,notes:data.notes.trim(),status:"recebido",createdAt:now,updatedAt:now};
- const next=id?payments.map(p=>p.id===id?{...p,...item,createdAt:p.createdAt||now}:p):[...payments,item];
+ const existing=id?payments.find(p=>String(p.id)===String(id)):null;
+ const item={id:id||("pag_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)),clientName:data.clientName.trim(),clientPhone:data.clientPhone.trim(),serviceName:data.serviceName.trim(),amount:value,date:data.date,method:data.method,notes:data.notes.trim(),status:existing?.status||"recebido",createdAt:existing?.createdAt||now,updatedAt:now};
+ const next=id?payments.map(p=>p.id===id?{...p,...item,canceledAt:p.canceledAt}:p):[...payments,item];
  if(id&&!payments.some(p=>p.id===id)){error.textContent="Pagamento não encontrado. Atualize a tela e tente novamente.";return}
  if(!write(next)){error.textContent="Não foi possível salvar o pagamento neste navegador.";return}
  document.querySelector("#payment-dialog").close();render();

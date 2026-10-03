@@ -35,9 +35,9 @@
           <p id="agenda-period-label" class="muted"></p>
         </div>
         <div class="agenda-actions">
-          <button id="previous-day" class="button button-secondary" type="button" aria-label="Dia anterior">←</button>
+          <button id="previous-day" class="button button-secondary" type="button" aria-label="Período anterior">←</button>
           <button id="today-button" class="button button-secondary" type="button">Hoje</button>
-          <button id="next-day" class="button button-secondary" type="button" aria-label="Próximo dia">→</button>
+          <button id="next-day" class="button button-secondary" type="button" aria-label="Próximo período">→</button>
           <button id="new-appointment" class="button button-primary" type="button">+ Novo agendamento</button>
         </div>
       </header>
@@ -59,10 +59,11 @@
 
   <dialog id="appointment-dialog" class="modal">
     <form id="appointment-form" method="dialog">
+      <input name="id" type="hidden">
       <div class="modal-header">
         <div>
-          <p class="eyebrow">Novo atendimento</p>
-          <h2>Agendar horário</h2>
+          <p class="eyebrow">Atendimento</p>
+          <h2 id="appointment-dialog-title">Agendar horário</h2>
         </div>
         <button id="close-dialog" class="icon-button" type="button" aria-label="Fechar">×</button>
       </div>
@@ -100,10 +101,10 @@
         </label>
       </div>
 
-      <p id="form-error" class="form-error" role="alert"></p>
+      <p id="form-error" class="form-error" role="alert" aria-live="assertive"></p>
       <div class="modal-actions">
         <button id="cancel-dialog" class="button button-secondary" type="button">Cancelar</button>
-        <button class="button button-primary" type="submit">Salvar agendamento</button>
+        <button id="save-appointment" class="button button-primary" type="submit">Salvar agendamento</button>
       </div>
     </form>
   </dialog>
@@ -128,7 +129,7 @@
           <input name="reason" type="text" maxlength="120" placeholder="Ex.: Compromisso pessoal">
         </label>
       </div>
-      <p id="block-error" class="form-error" role="alert"></p>
+      <p id="block-error" class="form-error" role="alert" aria-live="assertive"></p>
       <div class="modal-actions">
         <button id="cancel-block-dialog" class="button button-secondary" type="button">Cancelar</button>
         <button class="button button-primary" type="submit">Bloquear horário</button>

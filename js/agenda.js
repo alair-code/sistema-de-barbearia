@@ -183,6 +183,7 @@
   }
 
   function cancelAppointment(id){const appointments=readList(STORAGE_KEYS.appointments),target=appointments.find(item=>item.id===id);if(!target||!window.confirm("Cancelar este agendamento?"))return;target.status="Cancelado";target.canceledAt=new Date().toISOString();writeList(STORAGE_KEYS.appointments,appointments);render();}
+  function setAppointmentStatus(id,status){const appointments=readList(STORAGE_KEYS.appointments),target=appointments.find(item=>item.id===id);if(!target)return;if(!window.confirm(status==="Concluído"?"Marcar este atendimento como concluído?":"Marcar este cliente como falta?"))return;target.status=status;target.updatedAt=new Date().toISOString();if(status==="Faltou")target.missedAt=new Date().toISOString();if(!writeList(STORAGE_KEYS.appointments,appointments))window.alert("Não foi possível atualizar o atendimento.");render();}
   function unblock(id){const blocks=readList(STORAGE_KEYS.blocks);if(!window.confirm("Liberar este horário?"))return;writeList(STORAGE_KEYS.blocks,blocks.filter(item=>item.id!==id));render();}
 
   function bindEvents() {
@@ -210,6 +211,8 @@
       if(action==="open-settings")openSettingsDialog();
       if(action==="edit-appointment"){const appointment=readList(STORAGE_KEYS.appointments).find(item=>item.id===button.dataset.id);if(appointment)openAppointmentDialog("",appointment);}
       if(action==="cancel-appointment")cancelAppointment(button.dataset.id);
+      if(action==="complete-appointment")setAppointmentStatus(button.dataset.id,"Concluído");
+      if(action==="miss-appointment")setAppointmentStatus(button.dataset.id,"Faltou");
       if(action==="unblock")unblock(button.dataset.id);
     });
     document.querySelectorAll(".nav-link[aria-disabled='true']").forEach(link=>link.addEventListener("click",event=>event.preventDefault()));

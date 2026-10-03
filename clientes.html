@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastro e acompanhamento de clientes da barbearia.">
+  <title>Barbearia — Clientes</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/clientes.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✂</span><div><strong>Barbearia</strong><small>Gestão</small></div></div>
+      <nav>
+        <a class="nav-link" href="index.html">📊 Dashboard</a>
+        <a class="nav-link" href="agenda.html">📅 Agenda</a>
+        <a class="nav-link" href="agendamento.html">📲 Agendamento</a>
+        <a class="nav-link active" href="clientes.html" aria-current="page">👤 Clientes</a>
+        <a class="nav-link" href="#" aria-disabled="true">✂️ Serviços</a>
+        <a class="nav-link" href="#" aria-disabled="true">💰 Financeiro</a>
+        <a class="nav-link" href="#" aria-disabled="true">⚙️ Configurações</a>
+      </nav>
+      <p class="sidebar-note">Os módulos serão liberados conforme o desenvolvimento.</p>
+    </aside>
+    <main class="main">
+      <header class="topbar clients-topbar">
+        <div><p class="eyebrow">Relacionamento</p><h1>Clientes</h1><p class="muted">Cadastre clientes e acompanhe o histórico de atendimento.</p></div>
+        <button id="new-client" class="button button-primary" type="button">+ Novo cliente</button>
+      </header>
+
+      <section class="client-stats" aria-label="Resumo dos clientes">
+        <article class="card"><span class="card-label">Total de clientes</span><strong id="total-clients">0</strong><span class="card-help">Cadastros ativos no sistema</span></article>
+        <article class="card"><span class="card-label">Clientes novos</span><strong id="new-clients">0</strong><span class="card-help">Primeiro atendimento nos últimos 30 dias</span></article>
+        <article class="card"><span class="card-label">Clientes ativos</span><strong id="active-clients">0</strong><span class="card-help">Atendimento registrado nos últimos 60 dias</span></article>
+        <article class="card"><span class="card-label">Clientes inativos</span><strong id="inactive-clients">0</strong><span class="card-help">Sem atendimento há mais de 60 dias</span></article>
+      </section>
+
+      <section class="panel clients-panel">
+        <div class="clients-toolbar">
+          <label class="search-field"><span class="sr-only">Pesquisar clientes</span><input id="client-search" type="search" placeholder="Buscar por nome ou WhatsApp" autocomplete="off"></label>
+          <select id="client-filter" aria-label="Filtrar clientes">
+            <option value="todos">Todos</option><option value="novos">Novos</option><option value="ativos">Ativos</option><option value="inativos">Inativos</option>
+          </select>
+        </div>
+        <div id="clients-list" class="clients-list" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="client-dialog" class="modal">
+    <form id="client-form" method="dialog">
+      <input name="id" type="hidden">
+      <div class="modal-header"><div><p class="eyebrow">Cadastro</p><h2 id="client-dialog-title">Novo cliente</h2></div><button id="close-client-dialog" class="icon-button" type="button" aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <label>Nome<input name="name" type="text" required maxlength="100" autocomplete="name" placeholder="Nome completo"></label>
+        <label>WhatsApp<input name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="(00) 00000-0000"></label>
+        <label class="full-field">Preferências<input name="preferences" type="text" maxlength="240" placeholder="Ex.: prefere degradê baixo"></label>
+        <label class="full-field">Observações<textarea name="notes" maxlength="500" rows="4" placeholder="Observações importantes sobre o cliente"></textarea></label>
+      </div>
+      <p id="client-form-error" class="form-error" role="alert" aria-live="assertive"></p>
+      <div class="modal-actions"><button id="cancel-client-dialog" class="button button-secondary" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar cliente</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="history-dialog" class="modal history-modal">
+    <div class="modal-header"><div><p class="eyebrow">Histórico</p><h2 id="history-title">Cliente</h2></div><button id="close-history-dialog" class="icon-button" type="button" aria-label="Fechar">×</button></div>
+    <div id="history-summary" class="history-summary"></div>
+    <div id="history-list" class="history-list"></div>
+  </dialog>
+  <script src="js/clientes.js"></script>
+</body>
+</html>

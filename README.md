@@ -47,7 +47,7 @@ O projeto deve utilizar exclusivamente:
 
 # 📦 Funcionalidades
 
-## 📊 Dashboard
+## 01 — 📊 Dashboard
 
 Exibir de forma simples:
 
@@ -60,7 +60,7 @@ Exibir de forma simples:
 
 ---
 
-## 📅 Agenda
+## 02 — 📅 Agenda
 
 Permitir:
 
@@ -76,7 +76,7 @@ Permitir:
 
 ---
 
-## 📲 Agendamento
+## 03 — 📲 Agendamento
 
 O cliente deverá poder:
 
@@ -91,7 +91,7 @@ O sistema deverá permitir direcionar o cliente para o **WhatsApp** para confirm
 
 ---
 
-## 👤 Clientes
+## 04 — 👤 Clientes
 
 Cadastro com:
 
@@ -112,7 +112,7 @@ Separar clientes por situações como:
 
 ---
 
-## ✂️ Serviços
+## 05 — ✂️ Serviços
 
 Permitir cadastrar:
 
@@ -132,7 +132,7 @@ Exemplos:
 
 ---
 
-## 🔄 Retenção de clientes
+## 06 — 🔄 Retenção de clientes
 
 O sistema deverá ajudar o barbeiro a identificar:
 
@@ -151,7 +151,7 @@ Também deverá possuir:
 
 ---
 
-## 💰 Financeiro
+## 07 — 💰 Financeiro
 
 Permitir registrar:
 
@@ -173,7 +173,7 @@ Formas de pagamento:
 
 ---
 
-## 🌐 Site da Barbearia
+## 08 — 🌐 Site da Barbearia
 
 O sistema deverá possuir uma área para apresentar a barbearia profissionalmente.
 
@@ -195,7 +195,7 @@ Informações:
 
 ---
 
-## 📈 Relatórios
+## 09 — 📈 Relatórios
 
 Apresentar informações como:
 
@@ -212,7 +212,7 @@ Os relatórios devem ser simples e fáceis de entender.
 
 ---
 
-# 💡 Inteligência do sistema
+## 10 — 💡 Inteligência do sistema
 
 Mesmo sendo um sistema frontend, a interface deverá apresentar **insights baseados nos dados armazenados localmente**.
 
@@ -230,7 +230,7 @@ Essas informações devem ajudar o barbeiro a entender **o que precisa de atenç
 
 ---
 
-# 💾 Armazenamento
+## 11 — 💾 Armazenamento e arquitetura
 
 Como o projeto será **100% frontend**, os dados deverão ser armazenados utilizando:
 
@@ -255,7 +255,7 @@ A arquitetura deve permitir uma futura substituição do `LocalStorage` por uma 
 
 ---
 
-# 📱 Responsividade
+## 12 — 📱 Responsividade
 
 O sistema deverá funcionar corretamente em:
 
@@ -268,7 +268,7 @@ A interface deve ser **mobile-first**, responsiva e adaptada para diferentes tam
 
 ---
 
-# 🎨 Interface
+## 13 — 🎨 Interface e experiência
 
 O sistema deve possuir:
 
@@ -286,7 +286,7 @@ A interface deve priorizar **simplicidade e velocidade**, evitando excesso de in
 
 ---
 
-# 🚀 MVP
+## 14 — 🚀 Integração e fechamento do MVP
 
 A primeira versão deve priorizar:
 
@@ -303,7 +303,7 @@ Funcionalidades adicionais poderão ser desenvolvidas posteriormente.
 
 ---
 
-# 🔮 Evolução futura
+## 15 — 🔮 Evolução futura
 
 O projeto poderá futuramente receber:
 
@@ -326,7 +326,7 @@ Essas funcionalidades **não fazem parte do MVP frontend atual** e não devem se
 
 ---
 
-# 📌 Regra principal do projeto
+## 📌 Regra principal do projeto
 
 O desenvolvimento deve respeitar o escopo definido neste documento.
 

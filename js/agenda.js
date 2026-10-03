@@ -7,18 +7,13 @@
     settings: "barbearia_configuracoes"
   };
 
-  const state = {
-    date: startOfDay(new Date()),
-    view: "day"
-  };
+  const state = { date: startOfDay(new Date()), view: "day" };
 
-  const readList = (key) => {
+  const readList = key => {
     try {
       const value = JSON.parse(localStorage.getItem(key) || "[]");
       return Array.isArray(value) ? value : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   };
 
   const writeList = (key, value) => localStorage.setItem(key, JSON.stringify(value));
@@ -27,12 +22,6 @@
     const date = value instanceof Date ? new Date(value) : new Date(value);
     date.setHours(0, 0, 0, 0);
     return date;
-  }
-
-  function dateKey(value) {
-    const date = value instanceof Date ? value : parseDate(value);
-    if (!date) return "";
-    return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
   }
 
   function parseDate(value) {
@@ -44,6 +33,12 @@
     }
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function dateKey(value) {
+    const date = value instanceof Date ? value : parseDate(value);
+    if (!date) return "";
+    return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
   }
 
   function normalizeStatus(value) {
@@ -91,25 +86,24 @@
     try {
       const value = JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) || "{}");
       return value && typeof value === "object" ? value : {};
-    } catch {
-      return {};
-    }
+    } catch { return {}; }
   }
 
   function getOperatingDays(settings) {
     const configured = settings.operatingDays || settings.diasFuncionamento;
-    if (Array.isArray(configured) && configured.length) return configured;
-    return null;
+    return Array.isArray(configured) && configured.length ? configured : null;
   }
 
   function getHours(settings) {
-    const open = settings.openingTime || settings.horaAbertura || "09:00";
-    const close = settings.closingTime || settings.horaFechamento || "19:00";
-    return { open, close };
+    return {
+      open: settings.openingTime || settings.horaAbertura || "09:00",
+      close: settings.closingTime || settings.horaFechamento || "19:00"
+    };
   }
 
   function timeToMinutes(value) {
     const [hours, minutes] = String(value || "00:00").split(":").map(Number);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return NaN;
     return (hours * 60) + minutes;
   }
 
@@ -121,86 +115,99 @@
     const settings = getSettings();
     const days = getOperatingDays(settings);
     const weekday = date.getDay();
-    const isOpen = days ? days.includes(weekday) || days.includes(String(weekday)) : true;
-    if (!isOpen) return [];
+    if (days && !days.includes(weekday) && !days.includes(String(weekday))) return [];
 
     const { open, close } = getHours(settings);
     const start = timeToMinutes(open);
     const end = timeToMinutes(close);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return [];
+
     const slots = [];
-    for (let minute = start; minute < end; minute += 30) {
-      slots.push(minutesToTime(minute));
-    }
+    for (let minute = start; minute < end; minute += 30) slots.push(minutesToTime(minute));
     return slots;
   }
 
   function getDayAppointments(date) {
     const key = dateKey(date);
-    return getAppointments()
-      .filter(item => dateKey(item.date || item.start) === key)
+    return getAppointments().filter(item => dateKey(item.date || item.start) === key)
       .sort((a, b) => getTime(a).localeCompare(getTime(b)));
   }
 
   function getDayBlocks(date) {
     const key = dateKey(date);
-    return getBlocks()
-      .filter(item => dateKey(item.date) === key)
+    return getBlocks().filter(item => dateKey(item.date) === key)
       .sort((a, b) => String(a.time || "").localeCompare(String(b.time || "")));
   }
 
   function findAppointmentAt(date, time) {
+    const minute = timeToMinutes(time);
     return getDayAppointments(date).find(item => {
-      const start = getTime(item);
-      const duration = getDuration(item);
-      return timeToMinutes(time) >= timeToMinutes(start) &&
-        timeToMinutes(time) < timeToMinutes(start) + duration;
+      const start = timeToMinutes(getTime(item));
+      return Number.isFinite(start) && minute >= start && minute < start + getDuration(item);
     });
   }
 
   function findBlockAt(date, time) {
-    return getDayBlocks(date).find(item => String(item.time || "").slice(0, 5) === time);
+    const minute = timeToMinutes(time);
+    return getDayBlocks(date).find(item => {
+      const start = timeToMinutes(item.time);
+      const duration = Number(item.duration) > 0 ? Number(item.duration) : 30;
+      return Number.isFinite(start) && minute >= start && minute < start + duration;
+    });
+  }
+
+  function appointmentMarkup(appointment, time) {
+    const name = appointment.clientName || appointment.clienteNome || appointment.client || "Cliente";
+    const service = appointment.serviceName || appointment.servicoNome || appointment.service || "Serviço";
+    const barber = appointment.barberName || appointment.barbeiroNome || appointment.barber || "";
+    const status = appointment.status || "Agendado";
+    return '<div class="slot"><div class="slot-time">' + escapeHtml(time) +
+      '</div><div class="slot-content"><div class="appointment"><div class="appointment-info"><strong>' +
+      escapeHtml(name) + '</strong><span>' + escapeHtml(service) + (barber ? " · " + escapeHtml(barber) : "") +
+      '</span></div><div class="appointment-meta"><span class="status-badge">' + escapeHtml(status) +
+      '</span><button class="text-button" type="button" data-action="edit-appointment" data-id="' +
+      escapeHtml(appointment.id || "") + '">Editar</button><button class="text-button" type="button" data-action="cancel-appointment" data-id="' +
+      escapeHtml(appointment.id || "") + '">Cancelar</button></div></div></div></div>';
   }
 
   function renderDay(date) {
     const appointments = getDayAppointments(date);
     const blocks = getDayBlocks(date);
     const slots = buildSlots(date);
-    const open = slots.length > 0;
 
-    if (!open) {
+    if (!slots.length) {
       return '<article class="panel day-card"><div class="day-header"><div><h2>' +
-        escapeHtml(formatDateLong(date)) +
-        '</h2><p>Data selecionada</p></div></div><div class="empty-agenda"><span class="empty-icon" aria-hidden="true">🔒</span><strong>Dia sem funcionamento configurado</strong><p>Configure os dias e horários de funcionamento para gerar a grade automaticamente.</p><button class="button button-secondary" type="button" data-action="open-settings">Configurar depois</button></div></article>';
+        escapeHtml(formatDateLong(date)) + '</h2><p>Data selecionada</p></div></div><div class="empty-agenda"><span class="empty-icon" aria-hidden="true">🔒</span><strong>Dia sem funcionamento configurado</strong><p>Configure os dias e horários de funcionamento para gerar a grade automaticamente.</p></div></article>';
     }
 
+    const renderedAppointments = new Set();
     const slotMarkup = slots.map(time => {
       const appointment = findAppointmentAt(date, time);
       const block = findBlockAt(date, time);
 
       if (appointment) {
-        if (getTime(appointment) !== time) return "";
-        const name = appointment.clientName || appointment.clienteNome || appointment.client || "Cliente";
-        const service = appointment.serviceName || appointment.servicoNome || appointment.service || "Serviço";
-        const barber = appointment.barberName || appointment.barbeiroNome || appointment.barber || "";
-        const status = appointment.status || "Agendado";
-        return '<div class="slot"><div class="slot-time">' + time + '</div><div class="slot-content"><div class="appointment"><div class="appointment-info"><strong>' +
-          escapeHtml(name) + '</strong><span>' + escapeHtml(service) + (barber ? " · " + escapeHtml(barber) : "") +
-          '</span></div><div class="appointment-meta"><span class="status-badge">' + escapeHtml(status) +
-          '</span><button class="text-button" type="button" data-action="cancel-appointment" data-id="' + escapeHtml(appointment.id || "") + '">Cancelar</button></div></div></div></div>';
+        if (renderedAppointments.has(appointment.id) || getTime(appointment) !== time) return "";
+        renderedAppointments.add(appointment.id);
+        return appointmentMarkup(appointment, time);
       }
 
       if (block) {
-        return '<div class="slot blocked"><div class="slot-time">' + time + '</div><div class="slot-content"><div class="blocked-item"><span>🔒 ' +
-          escapeHtml(block.reason || "Horário bloqueado") +
-          '</span><button class="text-button" type="button" data-action="unblock" data-id="' + escapeHtml(block.id || "") + '">Liberar</button></div></div></div>';
+        if (timeToMinutes(time) !== timeToMinutes(block.time)) return "";
+        return '<div class="slot blocked"><div class="slot-time">' + escapeHtml(time) +
+          '</div><div class="slot-content"><div class="blocked-item"><span>🔒 ' +
+          escapeHtml(block.reason || "Horário bloqueado") + '</span><button class="text-button" type="button" data-action="unblock" data-id="' +
+          escapeHtml(block.id || "") + '">Liberar</button></div></div></div>';
       }
 
-      return '<div class="slot"><div class="slot-time">' + time + '</div><div class="slot-content"><span class="slot-empty">Horário disponível</span><button class="text-button" type="button" data-action="new-at-time" data-time="' + time + '">Agendar</button></div></div>';
+      return '<div class="slot"><div class="slot-time">' + time +
+        '</div><div class="slot-content"><span class="slot-empty">Horário disponível</span><button class="text-button" type="button" data-action="new-at-time" data-time="' +
+        time + '">Agendar</button></div></div>';
     }).join("");
 
     return '<article class="panel day-card"><div class="day-header"><div><h2>' +
-      escapeHtml(formatDateLong(date)) +
-      '</h2><p>' + appointments.length + ' agendamento(s) · ' + blocks.length + ' bloqueio(s)</p></div><div class="day-actions"><button class="button button-secondary" type="button" data-action="block-time">🔒 Bloquear</button></div></div><div class="schedule">' +
+      escapeHtml(formatDateLong(date)) + '</h2><p>' + appointments.length +
+      ' agendamento(s) · ' + blocks.length + ' bloqueio(s)</p></div><div class="day-actions">' +
+      '<button class="button button-secondary" type="button" data-action="block-time">🔒 Bloquear</button></div></div><div class="schedule">' +
       slotMarkup + '</div></article>';
   }
 
@@ -212,27 +219,30 @@
 
   function getWeekStart(date) {
     const result = startOfDay(date);
-    const day = result.getDay();
-    result.setDate(result.getDate() - day);
+    result.setDate(result.getDate() - result.getDay());
     return result;
   }
 
   function renderWeek(date) {
     const start = getWeekStart(date);
     const days = Array.from({ length: 7 }, (_, index) => addDays(start, index));
-    return '<div class="week-grid">' + days.map(day => {
+
+    return '<div class="week-scroll"><div class="week-grid">' + days.map(day => {
       const appointments = getDayAppointments(day);
       const blocks = getDayBlocks(day);
       const slots = buildSlots(day).slice(0, 8);
+      const rendered = new Set();
+
       const content = slots.length ? slots.map(time => {
         const appointment = findAppointmentAt(day, time);
         const block = findBlockAt(day, time);
-        if (appointment && getTime(appointment) === time) {
-          const name = appointment.clientName || appointment.clienteNome || appointment.client || "Cliente";
-          const service = appointment.serviceName || appointment.servicoNome || appointment.service || "Serviço";
-          return '<div class="slot"><div class="slot-time">' + time + '</div><div class="slot-content"><div class="appointment"><div class="appointment-info"><strong>' + escapeHtml(name) + '</strong><span>' + escapeHtml(service) + '</span></div><div class="appointment-meta"><span class="status-badge">Agendado</span></div></div></div></div>';
+
+        if (appointment) {
+          if (rendered.has(appointment.id) || getTime(appointment) !== time) return "";
+          rendered.add(appointment.id);
+          return appointmentMarkup(appointment, time);
         }
-        if (block) {
+        if (block && timeToMinutes(block.time) === timeToMinutes(time)) {
           return '<div class="slot blocked"><div class="slot-time">' + time + '</div><div class="slot-content"><div class="blocked-item"><span>🔒 Bloqueado</span></div></div></div>';
         }
         return '<div class="slot"><div class="slot-time">' + time + '</div><div class="slot-content"><span class="slot-empty">Livre</span></div></div>';
@@ -240,14 +250,15 @@
 
       return '<article class="panel week-day"><div class="day-header"><h2>' +
         escapeHtml(new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(day)) +
-        '</h2><p>' + formatShortDate(day) + ' · ' + appointments.length + ' agenda(s) · ' + blocks.length + ' bloqueio(s)</p></div><div class="schedule">' +
-        content + '</div></article>';
-    }).join("") + '</div>';
+        '</h2><p>' + formatShortDate(day) + ' · ' + appointments.length + ' agenda(s) · ' +
+        blocks.length + ' bloqueio(s)</p></div><div class="schedule">' + content + '</div></article>';
+    }).join("") + '</div></div>';
   }
 
   function render() {
     const container = document.querySelector("#agenda-container");
     const label = document.querySelector("#agenda-period-label");
+
     if (state.view === "day") {
       label.textContent = formatDateLong(state.date);
       container.innerHTML = renderDay(state.date);
@@ -269,33 +280,39 @@
     const end = addDays(start, 6);
     return getAppointments().filter(item => {
       const value = parseDate(item.date || item.start);
-      return value && value >= start && value <= end;
+      return value && value >= start && value < addDays(end, 1);
     });
   }
 
   function getWeekBlocks(date) {
     const start = getWeekStart(date);
-    const end = addDays(start, 6);
+    const end = addDays(date, 6);
     return getBlocks().filter(item => {
       const value = parseDate(item.date);
-      return value && value >= start && value <= end;
+      return value && value >= start && value < addDays(end, 1);
     });
   }
 
-  function openAppointmentDialog(time = "") {
+  function openAppointmentDialog(time = "", appointment = null) {
     const form = document.querySelector("#appointment-form");
     form.reset();
-    form.elements.date.value = dateKey(state.date);
-    form.elements.time.value = time;
+    form.elements.id.value = appointment?.id || "";
+    form.elements.date.value = appointment?.date || dateKey(state.date);
+    form.elements.time.value = appointment?.time || time;
+    form.elements.clientName.value = appointment?.clientName || appointment?.clienteNome || "";
+    form.elements.clientPhone.value = appointment?.clientPhone || "";
+    form.elements.serviceName.value = appointment?.serviceName || appointment?.servicoNome || "";
+    form.elements.barberName.value = appointment?.barberName || appointment?.barbeiroNome || "";
+    form.elements.duration.value = String(appointment?.duration || 45);
+    form.elements.notes.value = appointment?.notes || "";
+    document.querySelector("#appointment-dialog-title").textContent = appointment ? "Editar agendamento" : "Agendar horário";
+    document.querySelector("#save-appointment").textContent = appointment ? "Salvar alterações" : "Salvar agendamento";
     document.querySelector("#form-error").textContent = "";
     document.querySelector("#appointment-dialog").showModal();
     form.elements.clientName.focus();
   }
 
-  function closeDialog() {
-    document.querySelector("#appointment-dialog").close();
-  }
-
+  function closeDialog() { document.querySelector("#appointment-dialog").close(); }
   function openBlockDialog(time = "") {
     const form = document.querySelector("#block-form");
     form.reset();
@@ -305,41 +322,46 @@
     document.querySelector("#block-dialog").showModal();
     form.elements.time.focus();
   }
-
-  function closeBlockDialog() {
-    document.querySelector("#block-dialog").close();
-  }
+  function closeBlockDialog() { document.querySelector("#block-dialog").close(); }
 
   function saveAppointment(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
     const error = document.querySelector("#form-error");
-    const appointments = getAppointments();
-    const key = data.date;
+    const appointments = readList(STORAGE_KEYS.appointments);
+    const editingId = data.id;
+    const activeAppointments = appointments.filter(item => !isCanceled(item) && item.id !== editingId);
     const start = timeToMinutes(data.time);
     const duration = Number(data.duration) || 45;
     const end = start + duration;
 
-    const conflict = appointments.some(item => {
-      if (dateKey(item.date || item.start) !== key) return false;
+    if (!data.date || !Number.isFinite(start) || start < 0 || start >= 24 * 60 || end > 24 * 60) {
+      error.textContent = "Informe uma data, horário e duração válidos.";
+      return;
+    }
+
+    const conflict = activeAppointments.some(item => {
+      if (dateKey(item.date || item.start) !== data.date) return false;
       const otherStart = timeToMinutes(getTime(item));
       const otherEnd = otherStart + getDuration(item);
       return start < otherEnd && end > otherStart;
     });
 
-    const blockConflict = getBlocks().some(item =>
-      dateKey(item.date) === key && timeToMinutes(item.time) >= start && timeToMinutes(item.time) < end
-    );
+    const blockConflict = getBlocks().some(item => {
+      if (dateKey(item.date) !== data.date) return false;
+      const blockStart = timeToMinutes(item.time);
+      const blockEnd = blockStart + (Number(item.duration) > 0 ? Number(item.duration) : 30);
+      return start < blockEnd && end > blockStart;
+    });
 
     if (conflict || blockConflict) {
-      error.textContent = "Esse horário já possui um atendimento ou bloqueio.";
+      error.textContent = "Esse período já possui um atendimento ou bloqueio.";
       return;
     }
 
-    const appointmentsData = readList(STORAGE_KEYS.appointments);
-    appointmentsData.push({
-      id: "ag-" + Date.now(),
+    const record = {
+      id: editingId || "ag-" + Date.now(),
       date: data.date,
       time: data.time,
       duration,
@@ -348,10 +370,21 @@
       serviceName: data.serviceName.trim(),
       barberName: data.barberName.trim(),
       notes: data.notes.trim(),
-      status: "Agendado",
-      createdAt: new Date().toISOString()
-    });
-    writeList(STORAGE_KEYS.appointments, appointmentsData);
+      status: editingId ? (appointments.find(item => item.id === editingId)?.status || "Agendado") : "Agendado",
+      createdAt: appointments.find(item => item.id === editingId)?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    if (!record.clientName || !record.serviceName) {
+      error.textContent = "Informe o cliente e o serviço.";
+      return;
+    }
+
+    const index = appointments.findIndex(item => item.id === editingId);
+    if (index >= 0) appointments[index] = { ...appointments[index], ...record };
+    else appointments.push(record);
+
+    writeList(STORAGE_KEYS.appointments, appointments);
     closeDialog();
     state.date = parseDate(data.date) || state.date;
     render();
@@ -362,8 +395,16 @@
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
     const error = document.querySelector("#block-error");
+    const date = parseDate(data.date);
+    const time = timeToMinutes(data.time);
 
-    if (getDayAppointments(parseDate(data.date)).some(item => getTime(item) === data.time)) {
+    if (!date || !Number.isFinite(time) || time < 0 || time >= 24 * 60) {
+      error.textContent = "Informe uma data e horário válidos.";
+      return;
+    }
+
+    const hasAppointment = getDayAppointments(date).some(item => getTime(item) === data.time);
+    if (hasAppointment) {
       error.textContent = "Já existe um atendimento nesse horário.";
       return;
     }
@@ -378,20 +419,20 @@
       id: "bloq-" + Date.now(),
       date: data.date,
       time: data.time,
+      duration: 30,
       reason: data.reason.trim() || "Horário bloqueado",
       createdAt: new Date().toISOString()
     });
     writeList(STORAGE_KEYS.blocks, blocks);
     closeBlockDialog();
-    state.date = parseDate(data.date) || state.date;
+    state.date = date;
     render();
   }
 
   function cancelAppointment(id) {
     const appointments = readList(STORAGE_KEYS.appointments);
     const target = appointments.find(item => item.id === id);
-    if (!target) return;
-    if (!window.confirm("Cancelar este agendamento?")) return;
+    if (!target || !window.confirm("Cancelar este agendamento?")) return;
     target.status = "Cancelado";
     target.canceledAt = new Date().toISOString();
     writeList(STORAGE_KEYS.appointments, appointments);
@@ -444,6 +485,10 @@
       const action = button.dataset.action;
       if (action === "new-at-time") openAppointmentDialog(button.dataset.time);
       if (action === "block-time") openBlockDialog();
+      if (action === "edit-appointment") {
+        const appointment = readList(STORAGE_KEYS.appointments).find(item => item.id === button.dataset.id);
+        if (appointment) openAppointmentDialog("", appointment);
+      }
       if (action === "cancel-appointment") cancelAppointment(button.dataset.id);
       if (action === "unblock") unblock(button.dataset.id);
     });

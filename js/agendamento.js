@@ -110,12 +110,12 @@
     const appointments=readList(KEYS.appointments);
     const record={id:"ag-"+Date.now(),date,time:state.time,duration,clientName:name,clientPhone:phone,serviceId:service.id,serviceName:service.name,barberId:barber.id,barberName:barber.name,notes,status:"Agendado",createdAt:new Date().toISOString()};
     appointments.push(record);writeList(KEYS.appointments,appointments);
-    const dateText=formatDate(selected),message="Olá! Gostaria de confirmar meu agendamento na barbearia.%0A%0ACliente: "+encodeURIComponent(name)+"%0AServiço: "+encodeURIComponent(service.name)+"%0ABarbeiro: "+encodeURIComponent(barber.name)+"%0AData: "+encodeURIComponent(dateText)+"%0AHorário: "+encodeURIComponent(state.time)+(notes?"%0AObservação: "+encodeURIComponent(notes):"");
-    const number=getWhatsappNumber(),url=number?"https://wa.me/"+number+"?text="+message:"";
+    const dateText=formatDate(selected),messageText="Olá! Gostaria de confirmar meu agendamento na barbearia.\n\nCliente: "+name+"\nServiço: "+service.name+"\nBarbeiro: "+barber.name+"\nData: "+dateText+"\nHorário: "+state.time+(notes?"\nObservação: "+notes:"");
+    const number=getWhatsappNumber(),url=number?"https://wa.me/"+number+"?text="+encodeURIComponent(messageText):"";
     document.querySelector("#success-message").textContent=name+", seu horário foi reservado para "+dateText+" às "+state.time+".";
     const whatsapp=document.querySelector("#whatsapp-button");whatsapp.dataset.url=url;whatsapp.disabled=!url;whatsapp.textContent=url?"Confirmar pelo WhatsApp":"WhatsApp não configurado";
     document.querySelector("#success-dialog").showModal();
-    state.time="";document.querySelector("#booking-form").reset();document.querySelector("#booking-date").value=date;renderServices();renderBarbers();renderSlots();renderSummary();
+    state.time="";document.querySelector("#client-name").value="";document.querySelector("#client-phone").value="";document.querySelector("#client-notes").value="";document.querySelector("#booking-date").value=date;renderSlots();renderSummary();
   }
 
   document.addEventListener("DOMContentLoaded",()=>{

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastro e gestão de serviços da barbearia.">
+  <title>Barbearia — Serviços</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/servicos.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✂</span><div><strong>Barbearia</strong><small>Gestão</small></div></div>
+      <nav>
+        <a class="nav-link" href="index.html">📊 Dashboard</a>
+        <a class="nav-link" href="agenda.html">📅 Agenda</a>
+        <a class="nav-link" href="agendamento.html">📲 Agendamento</a>
+        <a class="nav-link" href="clientes.html">👤 Clientes</a>
+        <a class="nav-link active" href="servicos.html" aria-current="page">✂️ Serviços</a>
+        <a class="nav-link" href="#" aria-disabled="true">💰 Financeiro</a>
+        <a class="nav-link" href="#" aria-disabled="true">⚙️ Configurações</a>
+      </nav>
+      <p class="sidebar-note">Os módulos serão liberados conforme o desenvolvimento.</p>
+    </aside>
+    <main class="main">
+      <header class="topbar services-topbar">
+        <div><p class="eyebrow">Catálogo de atendimento</p><h1>Serviços</h1><p class="muted">Cadastre preços, duração e disponibilidade dos serviços oferecidos.</p></div>
+        <button id="new-service" class="button button-primary" type="button">+ Novo serviço</button>
+      </header>
+      <section class="service-stats" aria-label="Resumo dos serviços">
+        <article class="card"><span class="card-label">Total</span><strong id="total-services">0</strong><span class="card-help">Serviços cadastrados</span></article>
+        <article class="card"><span class="card-label">Ativos</span><strong id="active-services">0</strong><span class="card-help">Disponíveis para agendamento</span></article>
+        <article class="card"><span class="card-label">Inativos</span><strong id="inactive-services">0</strong><span class="card-help">Ocultos do agendamento</span></article>
+        <article class="card"><span class="card-label">Preço médio</span><strong id="average-price">R$ 0,00</strong><span class="card-help">Entre os serviços ativos</span></article>
+      </section>
+      <section class="panel services-panel">
+        <div class="services-toolbar">
+          <label class="search-field"><span class="sr-only">Pesquisar serviços</span><input id="service-search" type="search" placeholder="Buscar por nome ou descrição" autocomplete="off"></label>
+          <select id="service-filter" aria-label="Filtrar serviços"><option value="todos">Todos</option><option value="ativos">Ativos</option><option value="inativos">Inativos</option></select>
+        </div>
+        <div id="services-list" class="services-list" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="service-dialog" class="modal">
+    <form id="service-form" method="dialog">
+      <input name="id" type="hidden">
+      <div class="modal-header"><div><p class="eyebrow">Cadastro</p><h2 id="service-dialog-title">Novo serviço</h2></div><button id="close-service-dialog" class="icon-button" type="button" aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <label>Nome<input name="name" type="text" required maxlength="100" placeholder="Ex.: Corte"></label>
+        <label>Preço (R$)<input name="price" type="number" required min="0" step="0.01" inputmode="decimal" placeholder="35,00"></label>
+        <label class="full-field">Descrição<input name="description" type="text" maxlength="240" placeholder="Descreva brevemente o serviço"></label>
+        <label>Duração<select name="duration"><option value="30">30 minutos</option><option value="45">45 minutos</option><option value="60">60 minutos</option><option value="90">90 minutos</option><option value="120">120 minutos</option><option value="150">150 minutos</option><option value="180">180 minutos</option></select></label>
+        <label class="status-field">Status<label class="switch"><input name="active" type="checkbox" checked><span>Serviço ativo</span></label></label>
+      </div>
+      <p id="service-form-error" class="form-error" role="alert" aria-live="assertive"></p>
+      <div class="modal-actions"><button id="cancel-service-dialog" class="button button-secondary" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar serviço</button></div>
+    </form>
+  </dialog>
+  <script src="js/servicos.js"></script>
+</body>
+</html>

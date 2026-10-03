@@ -51,6 +51,6 @@
     document.querySelector("#new-waiting").addEventListener("click",openWaiting);
     document.querySelector("#cancel-waiting").addEventListener("click",()=>document.querySelector("#waiting-dialog").close());
     document.querySelector("#close-waiting").addEventListener("click",()=>document.querySelector("#waiting-dialog").close());
-    document.querySelector("#retention-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;if(b.dataset.action==="remind")remind(b.dataset.id);if(b.dataset.action==="remove-waiting"){const items=list(KEYS.waiting);if(window.confirm("Remover este cliente da lista de espera?")){if(!write(KEYS.waiting,items.filter(x=>x.id!==b.dataset.id)))window.alert("Não foi possível atualizar a lista de espera.");render()}}if(b.dataset.action==="mark-return"&&window.confirm("Registrar um atendimento concluído para este cliente hoje?"))markReturn(b.dataset.id)});
+    document.querySelector("#retention-list").addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;if(b.dataset.action==="remind")remind(b.dataset.id);if(b.dataset.action==="remove-waiting"){const items=list(KEYS.waiting);if(window.confirm("Remover este cliente da lista de espera?")){if(!write(KEYS.waiting,items.filter(x=>x.id!==b.dataset.id)))window.alert("Não foi possível atualizar a lista de espera.");render()}}});
   });
 })();

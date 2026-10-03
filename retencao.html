@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Retenção e acompanhamento de clientes da barbearia.">
+  <title>Barbearia — Retenção</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/retencao.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✂</span><div><strong>Barbearia</strong><small>Gestão</small></div></div>
+      <nav>
+        <a class="nav-link" href="index.html">📊 Dashboard</a>
+        <a class="nav-link" href="agenda.html">📅 Agenda</a>
+        <a class="nav-link" href="agendamento.html">📲 Agendamento</a>
+        <a class="nav-link" href="clientes.html">👤 Clientes</a>
+        <a class="nav-link" href="servicos.html">✂️ Serviços</a>
+        <a class="nav-link active" href="retencao.html" aria-current="page">🔄 Retenção</a>
+        <a class="nav-link" href="#" aria-disabled="true">💰 Financeiro</a>
+        <a class="nav-link" href="#" aria-disabled="true">⚙️ Configurações</a>
+      </nav>
+      <p class="sidebar-note">Os módulos serão liberados conforme o desenvolvimento.</p>
+    </aside>
+    <main class="main">
+      <header class="topbar retention-topbar">
+        <div><p class="eyebrow">Relacionamento</p><h1>Retenção de clientes</h1><p class="muted">Identifique quem precisa de atenção e registre retornos, faltas e cancelamentos.</p></div>
+        <button id="new-waiting" class="button button-primary" type="button">+ Lista de espera</button>
+      </header>
+
+      <section class="retention-stats" aria-label="Resumo da retenção">
+        <article class="card"><span class="card-label">Precisam retornar</span><strong id="return-count">0</strong><span class="card-help">Mais de 40 dias sem atendimento</span></article>
+        <article class="card"><span class="card-label">Recorrentes</span><strong id="recurring-count">0</strong><span class="card-help">3 ou mais atendimentos concluídos</span></article>
+        <article class="card"><span class="card-label">Novos</span><strong id="new-count">0</strong><span class="card-help">Primeiro atendimento nos últimos 30 dias</span></article>
+        <article class="card"><span class="card-label">Ocorrências</span><strong id="occurrence-count">0</strong><span class="card-help">Cancelamentos e faltas registrados</span></article>
+      </section>
+
+      <section class="panel retention-panel">
+        <div class="retention-tabs" role="tablist" aria-label="Listas de retenção">
+          <button class="retention-tab active" type="button" role="tab" aria-selected="true" data-tab="retorno">Precisam retornar</button>
+          <button class="retention-tab" type="button" role="tab" aria-selected="false" data-tab="recorrentes">Recorrentes</button>
+          <button class="retention-tab" type="button" role="tab" aria-selected="false" data-tab="novos">Novos</button>
+          <button class="retention-tab" type="button" role="tab" aria-selected="false" data-tab="ocorrencias">Ocorrências</button>
+          <button class="retention-tab" type="button" role="tab" aria-selected="false" data-tab="espera">Lista de espera</button>
+        </div>
+        <div class="retention-toolbar">
+          <label class="search-field"><span class="sr-only">Pesquisar</span><input id="retention-search" type="search" placeholder="Buscar por nome ou WhatsApp" autocomplete="off"></label>
+        </div>
+        <div id="retention-list" class="retention-list" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="waiting-dialog" class="modal">
+    <form id="waiting-form" method="dialog">
+      <div class="modal-header"><div><p class="eyebrow">Disponibilidade</p><h2>Adicionar à lista de espera</h2></div><button id="close-waiting" class="icon-button" type="button" aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <label>Cliente<input name="clientName" type="text" required maxlength="100" placeholder="Nome do cliente"></label>
+        <label>WhatsApp<input name="clientPhone" type="tel" maxlength="20" placeholder="(00) 00000-0000"></label>
+        <label>Serviço<input name="serviceName" type="text" maxlength="100" placeholder="Ex.: Corte"></label>
+        <label>Preferência de data<input name="preferredDate" type="date"></label>
+        <label class="full-field">Observação<input name="notes" type="text" maxlength="240" placeholder="Horário ou preferência do cliente"></label>
+      </div>
+      <p id="waiting-error" class="form-error" role="alert" aria-live="assertive"></p>
+      <div class="modal-actions"><button id="cancel-waiting" class="button button-secondary" type="button">Cancelar</button><button class="button button-primary" type="submit">Adicionar</button></div>
+    </form>
+  </dialog>
+  <script src="js/retencao.js"></script>
+</body>
+</html>
